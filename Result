@@ -1,0 +1,197 @@
+ "week1": {
+    "rows_raw": 65,
+    "missing_cells": 17,
+    "missing_cell_pct": 2.9,
+    "duplicates_removed": 5,
+    "duplicate_pct": 7.7,
+    "impossible_values": 5,
+    "date_order_errors": 1
+  },
+  "week3_mape_best": 1.58,
+  "week3_mape_naive": 3.03,
+  "readmission": {
+    "n": 200,
+    "hf_n": 32,
+    "hf_share_pct": 16.0,
+    "overall_pct": 29.5,
+    "hf_pct": 65.6,
+    "overall_if_hf_down_10pp": 27.9,
+    "avoided_per_200": 3.2
+  },
+  "maturity": {
+    "Strategy and governance": {
+      "current": 2.0,
+      "target": 4.0,
+      "gap": 2.0
+    },
+    "Data collection and integration": {
+      "current": 2.0,
+      "target": 4.0,
+      "gap": 2.0
+    },
+    "Data quality management": {
+      "current": 3.0,
+      "target": 4.5,
+      "gap": 1.5
+    },
+    "Analytics and modelling": {
+      "current": 3.0,
+      "target": 4.0,
+      "gap": 1.0
+    },
+    "Reporting and visualization": {
+      "current": 3.0,
+      "target": 4.0,
+      "gap": 1.0
+    },
+    "Privacy, security and ethics": {
+      "current": 2.0,
+      "target": 4.5,
+      "gap": 2.5
+    },
+    "Infrastructure and automation": {
+      "current": 2.0,
+      "target": 4.0,
+      "gap": 2.0
+    },
+    "Skills and data culture": {
+      "current": 2.5,
+      "target": 4.0,
+      "gap": 1.5
+    }
+  },
+  "avg_current": 2.44,
+  "avg_target": 4.12,
+  "maturity_table": [
+    {
+      "Component": "Strategy and governance",
+      "Current": 2.0,
+      "Target": 4.0,
+      "Evidence": "No named data owner, no data dictionary or agreed definitions in the simulated project",
+      "Gap": 2.0
+    },
+    {
+      "Component": "Data collection and integration",
+      "Current": 2.0,
+      "Target": 4.0,
+      "Evidence": "Mixed formats and labels show weak entry standards; single flat file, no integration",
+      "Gap": 2.0
+    },
+    {
+      "Component": "Data quality management",
+      "Current": 3.0,
+      "Target": 4.5,
+      "Evidence": "Issues were found and fixed with flags and a log, but the work was reactive and manual",
+      "Gap": 1.5
+    },
+    {
+      "Component": "Analytics and modelling",
+      "Current": 3.0,
+      "Target": 4.0,
+      "Evidence": "Sound methods with validation and a benchmark; limited external predictors and no retraining plan",
+      "Gap": 1.0
+    },
+    {
+      "Component": "Reporting and visualization",
+      "Current": 3.0,
+      "Target": 4.0,
+      "Evidence": "Clear dashboard design, but static, with no thresholds, targets or user testing",
+      "Gap": 1.0
+    },
+    {
+      "Component": "Privacy, security and ethics",
+      "Current": 2.0,
+      "Target": 4.5,
+      "Evidence": "Synthetic data only; no access controls, audit trail or de-identification rules defined",
+      "Gap": 2.5
+    },
+    {
+      "Component": "Infrastructure and automation",
+      "Current": 2.0,
+      "Target": 4.0,
+      "Evidence": "Scripts exist but run by hand, with no scheduling, automated tests or monitoring",
+      "Gap": 2.0
+    },
+    {
+      "Component": "Skills and data culture",
+      "Current": 2.5,
+      "Target": 4.0,
+      "Evidence": "Analyst skills are present, but no routine feedback loop with clinicians or managers",
+      "Gap": 1.5
+    }
+  ],
+  "recs": [
+    {
+      "ID": "R1",
+      "Recommendation": "Establish data governance",
+      "Impact": 5,
+      "Effort": 2,
+      "Start_month": 0,
+      "End_month": 3
+    },
+    {
+      "ID": "R2",
+      "Recommendation": "Prevent errors at the point of entry",
+      "Impact": 5,
+      "Effort": 3,
+      "Start_month": 0,
+      "End_month": 6
+    },
+    {
+      "ID": "R3",
+      "Recommendation": "Automate and version-control the pipeline",
+      "Impact": 4,
+      "Effort": 2,
+      "Start_month": 0,
+      "End_month": 3
+    },
+    {
+      "ID": "R4",
+      "Recommendation": "Monitor data quality with KPIs",
+      "Impact": 3,
+      "Effort": 1,
+      "Start_month": 1,
+      "End_month": 3
+    },
+    {
+      "ID": "R5",
+      "Recommendation": "Build privacy and security by design",
+      "Impact": 4,
+      "Effort": 4,
+      "Start_month": 3,
+      "End_month": 9
+    },
+    {
+      "ID": "R6",
+      "Recommendation": "Operationalise forecasting",
+      "Impact": 3,
+      "Effort": 3,
+      "Start_month": 3,
+      "End_month": 9
+    },
+    {
+      "ID": "R7",
+      "Recommendation": "Pilot a heart failure readmission programme",
+      "Impact": 5,
+      "Effort": 4,
+      "Start_month": 3,
+      "End_month": 9
+    },
+    {
+      "ID": "R8",
+      "Recommendation": "Train staff and create a clinician feedback loop",
+      "Impact": 2,
+      "Effort": 2,
+      "Start_month": 1,
+      "End_month": 6
+    },
+    {
+      "ID": "R9",
+      "Recommendation": "Adopt interoperability standards (HL7 FHIR)",
+      "Impact": 4,
+      "Effort": 5,
+      "Start_month": 9,
+      "End_month": 18
+    }
+  ]
+}
