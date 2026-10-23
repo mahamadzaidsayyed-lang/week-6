@@ -1,0 +1,9 @@
+Component,Current,Target,Evidence,Gap
+Strategy and governance,2.0,4.0,"No named data owner, no data dictionary or agreed definitions in the simulated project",2.0
+Data collection and integration,2.0,4.0,"Mixed formats and labels show weak entry standards; single flat file, no integration",2.0
+Data quality management,3.0,4.5,"Issues were found and fixed with flags and a log, but the work was reactive and manual",1.5
+Analytics and modelling,3.0,4.0,Sound methods with validation and a benchmark; limited external predictors and no retraining plan,1.0
+Reporting and visualization,3.0,4.0,"Clear dashboard design, but static, with no thresholds, targets or user testing",1.0
+"Privacy, security and ethics",2.0,4.5,"Synthetic data only; no access controls, audit trail or de-identification rules defined",2.5
+Infrastructure and automation,2.0,4.0,"Scripts exist but run by hand, with no scheduling, automated tests or monitoring",2.0
+Skills and data culture,2.5,4.0,"Analyst skills are present, but no routine feedback loop with clinicians or managers",1.5
