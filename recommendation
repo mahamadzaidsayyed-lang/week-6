@@ -1,0 +1,10 @@
+ID,Recommendation,Impact,Effort,Start_month,End_month
+R1,Establish data governance,5,2,0,3
+R2,Prevent errors at the point of entry,5,3,0,6
+R3,Automate and version-control the pipeline,4,2,0,3
+R4,Monitor data quality with KPIs,3,1,1,3
+R5,Build privacy and security by design,4,4,3,9
+R6,Operationalise forecasting,3,3,3,9
+R7,Pilot a heart failure readmission programme,5,4,3,9
+R8,Train staff and create a clinician feedback loop,2,2,1,6
+R9,Adopt interoperability standards (HL7 FHIR),4,5,9,18
