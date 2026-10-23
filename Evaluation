@@ -1,0 +1,137 @@
+"""Capstone evaluation of the simulated healthcare data strategy (Weeks 1-4).
+
+Builds a maturity scorecard, gap analysis, recommendation priority matrix and roadmap,
+using evidence from the earlier simulated analyses.
+
+Run:  python evaluation.py
+Input:  data/*.json, data/patients_week2.csv
+Output: data/maturity_assessment.csv, data/recommendations.csv, charts/*.png, results.json
+Requires: numpy, pandas, matplotlib
+"""
+import json
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+NAVY, BLUE, ORANGE, RED, GREEN, GREY = "#1F3864", "#2E75B6", "#ED7D31", "#C00000", "#548235", "#7F7F7F"
+plt.rcParams.update({"font.size": 11, "axes.spines.top": False, "axes.spines.right": False})
+
+w1 = json.load(open("data/week1_cleaning_log.json"))
+w3 = json.load(open("data/week3_results.json"))
+pts = pd.read_csv("data/patients_week2.csv")
+res = {}
+
+# ---------------------------------------------------------------- 1. Evidence from earlier weeks
+cells_raw = 65 * 9
+missing_cells = sum(w1["missing_raw"].values())
+res["week1"] = {
+    "rows_raw": w1["rows_raw"],
+    "missing_cells": missing_cells,
+    "missing_cell_pct": round(missing_cells / cells_raw * 100, 1),
+    "duplicates_removed": w1["duplicates_removed"],
+    "duplicate_pct": round(w1["duplicates_removed"] / w1["rows_raw"] * 100, 1),
+    "impossible_values": sum(w1["outliers_flagged"].values()),
+    "date_order_errors": w1["discharge_before_admission"],
+}
+res["week3_mape_best"] = w3["test_metrics"]["Trend + seasonality"]["MAPE"]
+res["week3_mape_naive"] = w3["test_metrics"]["Seasonal naive"]["MAPE"]
+
+hf = pts[pts.Diagnosis == "Heart Failure"]
+n, nhf = len(pts), len(hf)
+overall = pts.Readmitted.mean() * 100
+hf_rate = hf.Readmitted.mean() * 100
+res["readmission"] = {"n": n, "hf_n": nhf, "hf_share_pct": round(nhf / n * 100, 1),
+                      "overall_pct": round(overall, 1), "hf_pct": round(hf_rate, 1)}
+# illustrative: if the heart-failure rate fell by 10 percentage points
+new_overall = overall - (nhf / n) * 10
+res["readmission"]["overall_if_hf_down_10pp"] = round(new_overall, 1)
+res["readmission"]["avoided_per_200"] = round(nhf * 0.10, 1)
+
+# ---------------------------------------------------------------- 2. Maturity scorecard (simulated self-assessment)
+ma = pd.DataFrame([
+    ("Strategy and governance",        2.0, 4.0, "No named data owner, no data dictionary or agreed definitions in the simulated project"),
+    ("Data collection and integration", 2.0, 4.0, "Mixed formats and labels show weak entry standards; single flat file, no integration"),
+    ("Data quality management",        3.0, 4.5, "Issues were found and fixed with flags and a log, but the work was reactive and manual"),
+    ("Analytics and modelling",        3.0, 4.0, "Sound methods with validation and a benchmark; limited external predictors and no retraining plan"),
+    ("Reporting and visualization",    3.0, 4.0, "Clear dashboard design, but static, with no thresholds, targets or user testing"),
+    ("Privacy, security and ethics",   2.0, 4.5, "Synthetic data only; no access controls, audit trail or de-identification rules defined"),
+    ("Infrastructure and automation",  2.0, 4.0, "Scripts exist but run by hand, with no scheduling, automated tests or monitoring"),
+    ("Skills and data culture",        2.5, 4.0, "Analyst skills are present, but no routine feedback loop with clinicians or managers"),
+], columns=["Component", "Current", "Target", "Evidence"])
+ma["Gap"] = ma["Target"] - ma["Current"]
+ma.to_csv("data/maturity_assessment.csv", index=False)
+res["maturity"] = {r.Component: {"current": r.Current, "target": r.Target, "gap": r.Gap} for r in ma.itertuples()}
+res["avg_current"] = round(float(ma.Current.mean()), 2)
+res["avg_target"] = round(float(ma.Target.mean()), 2)
+
+# ---------------------------------------------------------------- 3. Recommendations
+rec = pd.DataFrame([
+    ("R1", "Establish data governance",                         5, 2, 0, 3),
+    ("R2", "Prevent errors at the point of entry",              5, 3, 0, 6),
+    ("R3", "Automate and version-control the pipeline",         4, 2, 0, 3),
+    ("R4", "Monitor data quality with KPIs",                    3, 1, 1, 3),
+    ("R5", "Build privacy and security by design",              4, 4, 3, 9),
+    ("R6", "Operationalise forecasting",                        3, 3, 3, 9),
+    ("R7", "Pilot a heart failure readmission programme",       5, 4, 3, 9),
+    ("R8", "Train staff and create a clinician feedback loop",  2, 2, 1, 6),
+    ("R9", "Adopt interoperability standards (HL7 FHIR)",       4, 5, 9, 18),
+], columns=["ID", "Recommendation", "Impact", "Effort", "Start_month", "End_month"])
+rec.to_csv("data/recommendations.csv", index=False)
+
+# ================================================================= CHARTS
+# 1. Radar: current vs target
+labels = [c.replace(" and ", " &\n") for c in ma["Component"]]
+ang = np.linspace(0, 2 * np.pi, len(ma), endpoint=False).tolist(); ang += ang[:1]
+cur = ma["Current"].tolist() + [ma["Current"][0]]
+tgt = ma["Target"].tolist() + [ma["Target"][0]]
+fig = plt.figure(figsize=(7, 6)); ax = fig.add_subplot(111, polar=True)
+ax.plot(ang, tgt, color=GREEN, lw=2, ls="--", label="Target"); ax.fill(ang, tgt, color=GREEN, alpha=0.08)
+ax.plot(ang, cur, color=ORANGE, lw=2.5, label="Current"); ax.fill(ang, cur, color=ORANGE, alpha=0.25)
+ax.set_xticks(ang[:-1]); ax.set_xticklabels(labels, fontsize=9)
+ax.set_ylim(0, 5); ax.set_yticks([1, 2, 3, 4, 5]); ax.set_yticklabels(["1", "2", "3", "4", "5"], fontsize=8, color=GREY)
+ax.set_title("Data Strategy Maturity: Current vs Target", pad=22, fontweight="bold")
+ax.legend(loc="upper right", bbox_to_anchor=(1.25, 1.1), frameon=False)
+fig.tight_layout(); fig.savefig("charts/1_maturity_radar.png", dpi=150); plt.close(fig)
+
+# 2. Gap bars
+g = ma.sort_values("Gap")
+fig, ax = plt.subplots(figsize=(7.5, 4.2))
+ax.barh(g["Component"], g["Gap"], color=[RED if v >= 2 else BLUE for v in g["Gap"]])
+for i, v in enumerate(g["Gap"]):
+    ax.text(v + 0.03, i, f"{v:.1f}", va="center", fontsize=9)
+ax.set(xlabel="Gap to target (maturity points)", title="Where the Largest Gaps Are")
+fig.tight_layout(); fig.savefig("charts/2_gap_analysis.png", dpi=150); plt.close(fig)
+
+# 3. Priority matrix (impact vs effort)
+fig, ax = plt.subplots(figsize=(7.2, 5.2))
+ax.axhline(3.5, color="#BFBFBF", lw=1); ax.axvline(3.5, color="#BFBFBF", lw=1)
+for r in rec.itertuples():
+    dx, dy = 0, 0
+    col = GREEN if (r.Impact >= 4 and r.Effort <= 3) else (ORANGE if r.Impact >= 4 else BLUE)
+    ax.scatter(r.Effort + dx, r.Impact + dy, s=620, color=col, alpha=0.85, edgecolor="white", zorder=3)
+    ax.text(r.Effort + dx, r.Impact + dy, r.ID, ha="center", va="center", color="white", fontweight="bold", fontsize=10, zorder=4)
+ax.set_xlim(0.5, 5.7); ax.set_ylim(0.5, 5.9)
+ax.set(xlabel="Effort (1 = low, 5 = high)", ylabel="Expected impact (1 = low, 5 = high)", title="Recommendation Priority Matrix")
+ax.text(0.65, 5.7, "High impact, lower effort: do first", fontsize=9, color=GREEN, fontweight="bold")
+ax.text(3.6, 5.7, "High impact, higher effort: plan", fontsize=9, color=ORANGE, fontweight="bold")
+ax.text(0.65, 0.65, "Quick supporting wins", fontsize=9, color=BLUE, fontweight="bold")
+fig.tight_layout(); fig.savefig("charts/3_priority_matrix.png", dpi=150); plt.close(fig)
+
+# 4. Roadmap (Gantt)
+fig, ax = plt.subplots(figsize=(8, 4.4))
+phase_col = lambda s: GREEN if s == 0 else (BLUE if s < 3 else ORANGE)
+for i, r in enumerate(rec.itertuples()):
+    ax.barh(i, r.End_month - r.Start_month, left=r.Start_month, color=phase_col(r.Start_month), height=0.55)
+ax.set_yticks(range(len(rec))); ax.set_yticklabels([f"{r.ID}  {r.Recommendation[:34]}" for r in rec.itertuples()], fontsize=8.5)
+ax.invert_yaxis(); ax.set_xlim(0, 18); ax.set_xticks([0, 3, 6, 9, 12, 18])
+for x in (3, 9): ax.axvline(x, color="#BFBFBF", ls=":", lw=1)
+ax.set(xlabel="Months from start", title="Implementation Roadmap (18 Months)")
+fig.tight_layout(); fig.savefig("charts/4_roadmap.png", dpi=150); plt.close(fig)
+
+res["maturity_table"] = ma.to_dict("records")
+res["recs"] = rec.to_dict("records")
+with open("results.json", "w") as fh:
+    json.dump(res, fh, indent=2)
+print(json.dumps(res, indent=2))
